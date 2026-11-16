@@ -1,4 +1,4 @@
-"""Shape B — one ReAct agent. Student work.
+"""Shape B — one ReAct agent.
 
 Use `lab8.runtime.run_react` with max_steps=8. `decide` may pick a read tool.
 It must not call `issue_refund`. After the loop, the host validates the quote
@@ -20,8 +20,15 @@ ones. `lab8.trace.Trace` does this; your own tracer is fine if it matches.
 
 from __future__ import annotations
 
-from lab8.schemas import RunResult
-from lab8.shapes.common import not_implemented
+from contextlib import closing
+from typing import Any
+
+from lab8 import durability, mock_llm
+from lab8.db import connect
+from lab8.runtime import run_react
+from lab8.schemas import Budget, RunResult, make_run_id
+from lab8.shapes.common import finish
+from lab8.trace import Trace
 
 
 def run_claim(
@@ -31,7 +38,86 @@ def run_claim(
     store_path: str,
     crash_at: str | None = None,
 ) -> RunResult:
-    # TODO CP2 (student): thay stub này bằng shape single theo các bước ở docstring đầu file.
-    # TODO CP3 (student): truyền crash_at vào durability.issue_refund, không bắt InjectedCrash.
-    del store_path, crash_at
-    return not_implemented("single", claim_id, seed)
+    budget = Budget()
+    trace = Trace(make_run_id("single", claim_id, seed))
+    order_scope = {}
+    order = {}
+
+    def choose(*actions: tuple[str, dict[str, Any]]) -> dict[str, Any]:
+        tool_names = ", ".join(name for name, _ in actions)
+        response = mock_llm.complete(
+            budget, seed=seed, purpose="react", prompt=f"Choose a read tool: {tool_names}"
+        )
+        # MockLLM returns a seeded digest for ReAct. Map it to the available actions.
+        digest = response.split(":", 1)[1]
+        name, args = actions[int(digest, 16) % len(actions)]
+        trace.add("react_action", {"tool": name})
+        return {"tool": name, "args": args}
+
+    def decide(observation: dict[str, Any]) -> dict[str, Any]:
+        nonlocal order_scope, order
+        last_tool = observation.get("last_tool")
+        if last_tool is None:
+            return choose(("get_claim_view", {"claim_id": claim_id}))
+
+        result = observation["last_result"]
+        if last_tool == "get_claim_view":
+            if not result["found"]:
+                return {"final": {"status": "failed", "error_reason": "unknown_claim"}}
+            if not result["order_id"]:
+                return {"final": {"status": "needs_info", "error_reason": "missing_order_id"}}
+            order_scope = {"order_id": result["order_id"], "principal_id": result["principal_id"]}
+            return choose(("lookup_order", order_scope))
+
+        if last_tool == "lookup_order":
+            if not result["visible"]:
+                return {"final": {"status": "escalated", "error_reason": result["reason"]}}
+            order = result["order"]
+            return choose(
+                ("compute_compensation", {"order": order}),
+                ("lookup_refund_history", order_scope),
+            )
+
+        if last_tool == "lookup_refund_history":
+            trace.add("refund_history", {"refunded_vnd": result.get("refunded_vnd")})
+            return choose(("compute_compensation", {"order": order}))
+
+        # compute_compensation supplied the quote in the last tool observation.
+        return {"final": {}}
+
+    with closing(connect(store_path)) as conn:
+        react = run_react(conn, budget, observation={}, decide=decide, max_steps=8, worker=True)
+        final = react["final"]
+        status = final.get("status")
+        error_reason = final.get("error_reason")
+        proposal = 0
+
+        if status is None:
+            quote = react["observation"]["last_result"]
+            proposal = quote["amount_vnd"]
+            trace.add("compute_compensation", {"amount_vnd": proposal})
+            if proposal <= 0:
+                status = "denied"
+                error_reason = quote["reason"]
+            else:
+                # Send the full quote. The host applies approval and prior refunds.
+                outcome = durability.issue_refund(conn, claim_id, proposal, crash_at=crash_at)
+                trace.add("issue_refund", {"ok": outcome["ok"], "reason": outcome["reason"]})
+                if outcome["ok"]:
+                    status = "resolved"
+                else:
+                    status = "failed" if outcome["conflict"] else "denied"
+                    error_reason = outcome["reason"]
+
+        trace.add("decision", {"status": status, "proposal_amount": proposal})
+        return finish(
+            conn,
+            shape="single",
+            claim_id=claim_id,
+            seed=seed,
+            status=status,
+            proposal_amount=proposal,
+            budget=budget,
+            trace=trace,
+            error_reason=error_reason,
+        )

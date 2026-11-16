@@ -1,10 +1,10 @@
-"""Shape A — deterministic workflow. Student work.
+"""Shape A — deterministic workflow.
 
 Signature (do not change):
 
     run_claim(claim_id, *, seed, store_path, crash_at=None) -> RunResult
 
-Suggested steps. Money stays in code (`lab8.tools.compute_compensation`).
+Money stays in code (`lab8.tools.compute_compensation`).
 
 1. Open the store. Read the claim through `get_claim_view` (not SELECT *).
 2. Missing order_id -> status `needs_info`. Do not write the ledger.
@@ -29,8 +29,14 @@ ones. `lab8.trace.Trace` does this; your own tracer is fine if it matches.
 
 from __future__ import annotations
 
-from lab8.schemas import RunResult
-from lab8.shapes.common import not_implemented
+from contextlib import closing
+
+from lab8 import durability
+from lab8.db import connect
+from lab8.schemas import Budget, RunResult, make_run_id
+from lab8.shapes.common import finish
+from lab8.tools import compute_compensation, get_claim_view, lookup_order, tool_cost
+from lab8.trace import Trace
 
 
 def run_claim(
@@ -40,7 +46,51 @@ def run_claim(
     store_path: str,
     crash_at: str | None = None,
 ) -> RunResult:
-    # TODO CP2 (student): thay stub này bằng shape workflow theo các bước ở docstring đầu file.
-    # TODO CP3 (student): truyền crash_at vào durability.issue_refund, không bắt InjectedCrash.
-    del store_path, crash_at
-    return not_implemented("workflow", claim_id, seed)
+    budget = Budget()
+    trace = Trace(make_run_id("workflow", claim_id, seed))
+    read_cost = tool_cost()
+
+    with closing(connect(store_path)) as conn:
+        def done(status: str, *, proposal: int = 0, error_reason: str | None = None) -> RunResult:
+            trace.add("decision", {"status": status, "proposal_amount": proposal})
+            return finish(
+                conn,
+                shape="workflow",
+                claim_id=claim_id,
+                seed=seed,
+                status=status,
+                proposal_amount=proposal,
+                budget=budget,
+                trace=trace,
+                error_reason=error_reason,
+            )
+
+        budget.add_tool(read_cost)
+        claim = get_claim_view(conn, claim_id)
+        order_id = claim.get("order_id")
+        trace.add("get_claim_view", {"found": claim["found"], "has_order_id": bool(order_id)})
+        if not claim["found"]:
+            return done("failed", error_reason="unknown_claim")
+        if not order_id:
+            return done("needs_info", error_reason="missing_order_id")
+
+        budget.add_tool(read_cost)
+        order_view = lookup_order(conn, order_id, claim["principal_id"])
+        trace.add("lookup_order", {"visible": order_view["visible"], "reason": order_view["reason"]})
+        if not order_view["visible"]:
+            return done("escalated", error_reason=order_view["reason"])
+
+        budget.add_tool(read_cost)
+        quote = compute_compensation(conn, order_view["order"])
+        proposal = quote["amount_vnd"]
+        trace.add("compute_compensation", {"amount_vnd": proposal})
+        if proposal <= 0:
+            return done("denied", error_reason=quote["reason"])
+
+        # The host applies approval and subtracts refunds already issued for this order.
+        outcome = durability.issue_refund(conn, claim_id, proposal, crash_at=crash_at)
+        trace.add("issue_refund", {"ok": outcome["ok"], "reason": outcome["reason"]})
+        if outcome["ok"]:
+            return done("resolved", proposal=proposal)
+        status = "failed" if outcome["conflict"] else "denied"
+        return done(status, proposal=proposal, error_reason=outcome["reason"])
