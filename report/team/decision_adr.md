@@ -4,7 +4,7 @@
 `Shape chọn` phải là đúng một trong: `workflow`, `single`, `orchestrator`, `swarm`. Đây là shape được chấm cổng hidden.
 
 - Shape chọn: workflow
-- Commit hash: 1e98073
+- Commit hash: 8bc7bbc
 - Run id dẫn chứng: R-workflow-C-001-s11
 - Pass rate / pass^5 / seed min-max / variance: 100% (70/70 lượt) / 100% (14/14 claim đạt cả 5 seed) / 100%–100% / 0
 - Cost per success (mô phỏng, VND): 27,86 VND/lượt đạt (1.950 VND mô phỏng chia 70 lượt đạt)

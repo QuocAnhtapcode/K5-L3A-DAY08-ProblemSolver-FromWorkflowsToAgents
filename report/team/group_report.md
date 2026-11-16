@@ -4,7 +4,7 @@
 
 - Nhóm ProblemSolver, lớp L3A.
 - Thành viên và bằng chứng đóng góp được kê khai trong [TEAM.md](../../TEAM.md).
-- Commit chốt: 1e98073 (trùng [ADR](decision_adr.md)).
+- Commit chốt: 8bc7bbc (trùng [ADR](decision_adr.md)).
 
 ## 2. Mục tiêu và cách tiếp cận
 
@@ -32,9 +32,11 @@ Benchmark dùng cùng 14 claim, 5 seed `11, 22, 33, 44, 55` và SQLite mới cho
 | Orchestrator | 70/70 | 100% | 100% | 100%–100% | 0 | 37,14 | 5,36 / 6 |
 | Swarm | 69/70 | 98,57% | 92,86% | 92,86%–100% | 0,000816 | 49,57 | 2,80 / 3 |
 
-Chọn Workflow vì đồng hạng cao nhất về độ đúng và ổn định, đồng thời có chi phí thấp nhất. Crash suite chính thức đạt **20/20**. Cả ba shape đã qua T11 và T12 trong ma trận public. Bộ test đầy đủ đạt **305/305**, gồm ba ca mới kiểm tra phê duyệt thuộc claim khác ở hai lần gọi mỗi shape. Hai báo cáo chính thức được chạy lại và định dạng JSON tái tạo trùng từng byte. [Benchmark](../../src/reports/benchmark.json) · [Crash suite](../../src/reports/crash.json) · [Test tích hợp](../../src/tests/test_student_shapes_approval_binding.py)
+Chọn Workflow vì đồng hạng cao nhất về độ đúng và ổn định, đồng thời có chi phí thấp nhất. Crash suite chính thức đạt **20/20**. Cả ba shape đã qua T11 và T12 trong ma trận public. Bộ test đầy đủ đạt **308/308**, gồm ba ca kiểm tra phê duyệt thuộc claim khác khi chạy lại và ba test bonus B3. Hai báo cáo chính thức được chạy lại và định dạng JSON tái tạo trùng từng byte. [Benchmark](../../src/reports/benchmark.json) · [Crash suite](../../src/reports/crash.json) · [Test tích hợp](../../src/tests/test_student_shapes_approval_binding.py)
 
 Thí nghiệm R2 kiểm tra lỗi `R-swarm-C-002-s55`. Khi tính tiền chỉ từ số ngày trong dữ liệu đơn, Swarm tăng từ 69/70 lên 70/70 lượt đạt, với chi phí/lượt đạt giảm từ 49,57 xuống 48,72 VND mô phỏng. [Research card](research_card.md)
+
+Bonus B3 thêm verifier trước bước ghi. Swarm có verifier đạt 70/70 trên bộ public và 45/45 trên chín ca đối kháng, với chi phí lần lượt 48,86 và 53,84 VND mô phỏng mỗi lượt đạt. Workflow vẫn rẻ hơn trên cả hai bộ. [Báo cáo B3](bonus_report.md)
 
 ## 5. Khó khăn và cách xử lý
 
