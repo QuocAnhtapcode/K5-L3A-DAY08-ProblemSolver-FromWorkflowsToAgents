@@ -38,6 +38,12 @@ def main():
         print("No hidden summary yet; preserved existing team reports")
         return
     h = json.loads(report_path.read_text(encoding="utf-8"))
+    # Resolve the commit containing the measured code, rather than a docs-only
+    # HEAD or the starter. Do not attribute shared work to individual authors.
+    code_commit = subprocess.check_output(
+        ["git", "log", "-1", "--format=%h", "--", "src/lab8/shapes", "src/bonus/swarm_verified.py", "src/bonus/verifier.py"],
+        cwd=ROOT, text=True,
+    ).strip()
     w = h["by_shape"]["workflow"]
     v = h["by_shape"]["swarm_verified"]
     safety = list(h["safety_by_shape"].values())
@@ -105,7 +111,7 @@ python -m presentation.build
 
 ## Giới hạn
 
-MockLLM, dữ liệu synthetic, latency unavailable. Bộ hidden nay đã được cung cấp nên kết quả là kiểm chứng trên pack này, không chứng minh tổng quát trên dữ liệu chưa từng thấy khác. Đã chạy 351 test hồi quy xanh. Báo cáo giữ snapshot nguồn SHA-256 vì working tree hiện chưa có commit chốt chứa toàn bộ bài làm.
+MockLLM, dữ liệu synthetic, latency unavailable. Bộ hidden nay đã được cung cấp nên kết quả là kiểm chứng trên pack này, không chứng minh tổng quát trên dữ liệu chưa từng thấy khác. Đã chạy 351 test hồi quy xanh. Code đã kiểm chứng nằm trong commit `{code_commit}`; snapshot SHA-256 nằm trong hidden_summary.json. Các cập nhật hồ sơ sau rà soát cần được commit trước khi nộp.
 """
     write(TEAM / "hidden_validation.md", detail)
     common = f"""## Kiểm chứng hidden
@@ -131,9 +137,7 @@ Safety recount {totals['trials']} trial: secret/PII leak, approval bypass, execu
     text = field(text, "Run id dẫn chứng", "R-workflow-C-H03-s11; src/reports/hidden_summary.json; public R-workflow-C-001-s11")
     text = field(text, "Secret leak / approval bypass", f"0 / 0; PII leak 0 trên {totals['trials']} trial hidden recount và 750 trial public/đối kháng")
     text = field(text, "Crash safety", f"20/20 host; {h['crash_safety']} hidden; 12/12 public bổ sung")
-    if not re.search(r"^- Commit hash:", text, flags=re.M):
-        base = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True).strip()
-        text = field(text, "Commit hash", f"Chưa chốt commit bài làm; HEAD nền {base}; snapshot code chạy được lưu bằng source_sha256_lf trong src/reports/hidden_summary.json")
+    text = field(text, "Commit hash", f"{code_commit} (commit chứa code đã benchmark; snapshot SHA-256 trong src/reports/hidden_summary.json)")
     text = text.replace("Chưa có pack hidden, không suy ra điểm hidden từ public.", scope)
     text = text.replace("xác nhận gate hidden ≥ 0.75 trước khi kết luận đạt bài, ≥ 0.80 trước khi xin bonus.",
                         "gate local hidden ≥ 0.75 và ≥ 0.80 đã đạt; điểm chính thức chờ giảng viên.")
@@ -156,7 +160,7 @@ Verifier can thiệp {totals['verifier_overrides']} lần, tối đa một vòng
 
 Biến ablation vẫn chỉ là bật/tắt verifier. Lệnh: `python -m bonus.hidden_evidence --pack D:/AIThucChien/DAY08/instructor/instructor` trong src/. Nguồn: hidden_summary.json; [phương pháp và giới hạn](hidden_validation.md).
 """))
-    for p in TEAM.glob("0*.md"):
+    for p in TEAM.glob("[0-9]*_*.md"):
         write(p, block(p.read_text(encoding="utf-8"), f"""## 7. Bằng chứng kiểm chứng hidden
 
 {brief} Cả ba shape của nhóm và B3 đều đạt 200/200 trên 40 claim × 5 seed. Kiểm bổ sung: {totals['trials']} trial không phát hiện secret/PII leak, approval bypass hoặc execution error; crash hidden {h['crash_safety']}. Đây là kết quả chạy công cụ trên snapshot nguồn hiện tại. Xem [hidden_validation.md](hidden_validation.md) và src/reports/hidden_summary.json.

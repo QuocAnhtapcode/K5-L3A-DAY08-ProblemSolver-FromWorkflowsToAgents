@@ -1,4 +1,4 @@
-# Báo cáo cá nhân — 03707_HoangQuocAnh
+# Báo cáo cá nhân — 2A202603707_HoangQuocAnh
 
 ## 1. Thông tin thành viên
 
@@ -9,7 +9,7 @@
 
 ## 2. Phần việc phụ trách
 
-Tech lead, workflow, tích hợp và B3. Đây là phân công trách nhiệm nghiệm thu và trình bày của nhóm.
+Tech lead, workflow, tích hợp và B3. Phạm vi phụ trách theo phân công của nhóm.
 
 ## 3. Đóng góp cụ thể
 

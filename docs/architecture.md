@@ -22,8 +22,10 @@ Nguồn sự thật là order theo principal và policy current/effective, khôn
 
 [Báo cáo nhóm](../report/team/group_report.md) · [ADR](../report/team/decision_adr.md) · [HTML](../presentation/index.html)
 
+<!-- lab8-flow-links:start -->
 ## Luồng xử lý chi tiết — phụ lục
 
 Sơ đồ tổng quan được giữ trong [architecture.md](architecture.md). Sáu luồng được diễn giải bằng tiếng Việt dễ đọc trong [phụ lục Mermaid](flow_details.md): [quy trình cố định](flow_details.md#workflow), [một tác nhân](flow_details.md#single), [bộ điều phối](flow_details.md#orchestrator), [nhiều vai mô phỏng](flow_details.md#swarm), [cổng ghi tiền](flow_details.md#host), [kiểm chứng B3](flow_details.md#b3).
 
 Đọc từ trái sang phải. Trên HTML, mỗi lựa chọn hiển thị toàn bộ luồng trong một sơ đồ liền mạch, không chia phần hay chuyển trang. Có zoom, xem trọn luồng và mở rộng; toàn bộ hình nằm sẵn trong file local. Tên hàm và đường dẫn được chuyển xuống bảng đối chiếu kỹ thuật.
+<!-- lab8-flow-links:end -->

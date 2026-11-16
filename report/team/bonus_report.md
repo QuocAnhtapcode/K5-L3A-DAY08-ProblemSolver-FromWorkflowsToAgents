@@ -6,6 +6,12 @@ Nhóm: Problem Solver. Chủ đề: verifier bằng code trước khi ghi tiền
 
 [Google Research, 2026](https://research.google/blog/towards-a-science-of-scaling-agent-systems-when-and-why-agent-systems-work/) cho thấy phối hợp và cơ chế kiểm chứng ảnh hưởng lan truyền lỗi. Nguồn khảo sát 180 cấu hình với model/benchmark riêng; bài này chỉ kiểm một can thiệp trên MockLLM, không nhận tái lập định lượng của nguồn.
 
+## Hypothesis và thiết kế thí nghiệm
+
+Thêm verifier bằng code sẽ tăng pass rate và pass⁵ của swarm, giảm lỗi tin ticket, đồng thời tăng cost/success. Giữ MockLLM, registry tool, corpus, seed, bảng giá và evaluator; biến duy nhất là bật/tắt verifier. Chi phí các lượt đọc và quote thêm được tính vào budget.
+
+Lệnh tái lập trong src/: `python -m bonus.reproduce`.
+
 ## Thực hiện và phép đo
 
 `src/bonus/swarm_verified.py` giữ luồng swarm, thêm fresh lookup_order và đối chiếu delay_days/status/damage_verified trong `verifier.py`. Nếu khác, tính lại quote tối đa một lần; chạy trước cả nhánh quote = 0 để sửa trường hợp ticket nói thiếu ngày. Không sửa host, policy, metric, config hay public data. 16 claim đối kháng có nhãn viết tay trong bonus/cases.jsonl, không lấy quote làm oracle.

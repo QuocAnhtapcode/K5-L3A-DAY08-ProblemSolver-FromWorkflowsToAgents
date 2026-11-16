@@ -11,6 +11,8 @@
 
 Tái lập trong `src/` sau khi cài `requirements.txt`: `python -m bonus.reproduce`, rồi `python -m lab8.check_submission`. Sinh lại báo cáo và HTML tại gốc repo: `python scripts/build_lab_report.py` và `python -m presentation.build`.
 
+[Rà soát rubric và việc còn phải hoàn tất](report/team/submission_audit.md).
+
 Phần dưới giữ hướng dẫn của đề bài.
 
 AI20K K5, ngày 8. Nhóm xử lý claim hoàn phí vận chuyển của công ty giả lập LogiX-VN bằng **bốn kiến trúc** (workflow, single agent, orchestrator, swarm), rồi dựa trên số đo để chọn kiến trúc **ít tự chủ nhất mà vẫn làm được việc**. Dữ liệu là dữ liệu giả. Không cần GPU, API key hay internet trong giờ lab; chạy được trên Windows, macOS và Linux.

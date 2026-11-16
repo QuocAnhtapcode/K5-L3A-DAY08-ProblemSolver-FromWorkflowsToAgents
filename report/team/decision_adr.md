@@ -1,7 +1,7 @@
 # Decision record — Problem Solver
 
 - Shape chọn: workflow
-- Commit hash: Chưa chốt commit bài làm; HEAD nền 034c6c4; snapshot code chạy được lưu bằng source_sha256_lf trong src/reports/hidden_summary.json
+- Commit hash: bd5a602 (commit chứa code đã benchmark; snapshot SHA-256 khớp hidden_summary.json)
 - Run id dẫn chứng: R-workflow-C-H03-s11; src/reports/hidden_summary.json; public R-workflow-C-001-s11
 - Pass rate / pass^5 / seed min-max / variance: 1.0000 / 1.0000 / 1.0000–1.0000 / 0.000000 (hidden local, 200 trial)
 - Cost per success (mô phỏng, VND): 29.00 (hidden local); 27.86 (public)

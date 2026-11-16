@@ -55,4 +55,4 @@ python -m presentation.build
 
 ## Giới hạn
 
-MockLLM, dữ liệu synthetic, latency unavailable. Bộ hidden nay đã được cung cấp nên kết quả là kiểm chứng trên pack này, không chứng minh tổng quát trên dữ liệu chưa từng thấy khác. Đã chạy 351 test hồi quy xanh. Báo cáo giữ snapshot nguồn SHA-256 vì working tree hiện chưa có commit chốt chứa toàn bộ bài làm.
+MockLLM, dữ liệu synthetic, latency unavailable. Bộ hidden nay đã được cung cấp nên kết quả là kiểm chứng trên pack này, không chứng minh tổng quát trên dữ liệu chưa từng thấy khác. Đã chạy 351 test hồi quy xanh. Code đã kiểm chứng nằm trong commit `bd5a602`; SHA-256 của các file nguồn khớp bằng chứng hidden. Các cập nhật hồ sơ sau rà soát cần được commit trước khi nộp.

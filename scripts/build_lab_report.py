@@ -8,10 +8,10 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "report/team"
 SOURCE = "https://research.google/blog/towards-a-science-of-scaling-agent-systems-when-and-why-agent-systems-work/"
 MEMBERS = [
-    ("03707", "Hoàng Quốc Anh", "HoangQuocAnh", "Tech lead, workflow, tích hợp và B3", "test_workflow_requirements.py; test_bonus_b3.py; test_submission_portability.py"),
-    ("03709", "Đỗ Thị Thanh Bình", "DoThiThanhBinh", "BA, luật nghiệp vụ, acceptance criteria và báo cáo", "test_workflow_requirements.py; test_verified_matches_handwritten_adversarial_labels trong test_bonus_b3.py"),
-    ("03713", "Lê Gia Hưng", "LeGiaHung", "Single ReAct, QA, crash và retry", "test_single_agent.py; test_verified_crash_replay_and_audit trong test_bonus_b3.py"),
-    ("03720", "Hà Quang Vinh", "HaQuangVinh", "Orchestrator, handoff, benchmark và HTML", "test_orchestrator_boundary.py; test_submission_portability.py; test_bonus_b3.py"),
+    ("2A202603707", "Hoàng Quốc Anh", "HoangQuocAnh", "Tech lead, workflow, tích hợp và B3", "test_workflow_requirements.py; test_bonus_b3.py; test_submission_portability.py"),
+    ("2A202603709", "Đỗ Thị Thanh Bình", "DoThiThanhBinh", "BA, luật nghiệp vụ, acceptance criteria và báo cáo", "test_workflow_requirements.py; test_verified_matches_handwritten_adversarial_labels trong test_bonus_b3.py"),
+    ("2A202603713", "Lê Gia Hưng", "LeGiaHung", "Single ReAct, QA, crash và retry", "test_single_agent.py; test_verified_crash_replay_and_audit trong test_bonus_b3.py"),
+    ("2A202603720", "Hà Quang Vinh", "HaQuangVinh", "Orchestrator, handoff, benchmark và HTML", "test_orchestrator_boundary.py; test_submission_portability.py; test_bonus_b3.py"),
 ]
 
 

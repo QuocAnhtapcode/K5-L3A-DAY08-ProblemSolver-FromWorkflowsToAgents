@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | CÂU | R1 / R2 / R3 / R4 | R1 — Scaling; mở rộng kiểm chứng vào luồng tuần tự |
 | SOURCE | Paper/blog, năm, URL, loại bằng chứng | Google Research, 28/01/2026, [Towards a science of scaling agent systems](https://research.google/blog/towards-a-science-of-scaling-agent-systems-when-and-why-agent-systems-work/); blog báo cáo nghiên cứu, 180 cấu hình |
-| CLAIM | Một kết luận gốc của nguồn | Lợi ích phối hợp phụ thuộc khả năng phân rã task; các task tuần tự trong nghiên cứu có thể giảm hiệu năng khi thêm agent. |
+| CLAIM | Một kết luận gốc của nguồn | Lợi ích phối hợp phụ thuộc task; nguồn cũng ghi nhận bộ điều phối tập trung tạo điểm kiểm chứng giúp hạn chế lỗi lan truyền. Bài lab kiểm riêng việc thêm verifier bằng code. |
 | BOUNDARY | Model / dataset / setup | Nguồn dùng nhiều model và benchmark riêng; LogiX chỉ có MockLLM và luật có cấu trúc, không tái lập hệ số của paper. |
 | HYPOTHESIS | Một biến và dự đoán | Thêm verifier code trước ghi tiền sẽ sửa lỗi tin ticket của swarm, tăng pass rate và cost/success; không làm swarm rẻ hơn workflow. |
 | METHOD | Biến giữ cố định / thay đổi | Giữ MockLLM, seed 11/22/33/44/55, tools, corpus, giá và evaluator; bật/tắt verifier là biến ablation. Workflow là baseline tham chiếu. |
