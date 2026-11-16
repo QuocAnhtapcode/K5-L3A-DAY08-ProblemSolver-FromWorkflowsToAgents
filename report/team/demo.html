@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>LogiX-VN · Demo Lab 8</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f3f6fa;
+  --surface: #ffffff;
+  --ink: #142539;
+  --muted: #495d72;
+  --line: #dbe4ec;
+  --navy: #10283e;
+  --green: #096554;
+  --mint: #dff6ed;
+  --orange: #8a470d;
+  --shadow: 0 2px 5px #122b4410, 0 12px 28px #122b4408;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  font-synthesis: none;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.56; }
+button, select { font: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #2676c5; outline-offset: 3px; }
+a { color: var(--green); }
+p, h1, h2, h3 { margin: 0; }
+code, pre { font-family: "IBM Plex Mono", Consolas, monospace; }
+code { font-size: .92em; }
+p > code { color: #25465e; overflow-wrap: anywhere; }
+pre { margin: 10px 0 11px; padding: 14px 17px; overflow: auto; border-radius: 11px; background: #eef3f8; color: #17354d; font-size: .86rem; }
+.sr-only, .skip:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip:focus { position: fixed; inset: 8px auto auto 8px; z-index: 20; background: white; padding: 10px 14px; border-radius: 8px; }
+.shell { width: min(1120px, calc(100% - 48px)); margin-inline: auto; }
+.top { background: var(--navy); color: #f0f8ff; }
+.top-inner { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 11px; }
+.brand strong { display: block; font-size: 1.06rem; font-weight: 740; letter-spacing: -.025em; line-height: 1.18; }
+.brand div span { display: block; color: #bdcbd9; font-size: .75rem; margin-top: 3px; }
+.mark { display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 38px; border-radius: 11px; background: #a4f0d7; color: #153f3a; font-size: .84rem; font-weight: 800; letter-spacing: -.05em; }
+.badge { display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 3px 10px; background: #edf2f7; color: #354c62; font-size: .74rem; font-weight: 650; white-space: nowrap; }
+.header-badge { color: #d6f8e9; background: #194b49; border: 1px solid #2d6860; }
+.badge i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #9be1c7; }
+.badge.good { color: #095645; background: #dff4ea; }
+.badge.warn { color: #7b390b; background: #fff0df; }
+.nav-wrap { position: sticky; top: 0; z-index: 5; background: #fffffff7; border-bottom: 1px solid var(--line); }
+.tabs { display: flex; align-items: stretch; flex-wrap: wrap; gap: 3px 15px; }
+.tabs button { padding: 14px 10px; margin-bottom: -1px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); font-size: .88rem; font-weight: 650; }
+.tabs button[aria-selected="true"] { color: var(--green); border-bottom-color: #15987a; }
+.tabs button:hover { color: var(--green); background: #f3f9f6; }
+main { padding: 30px 0 22px; }
+.hero { min-width: 0; padding: clamp(26px, 5vw, 48px); display: grid; grid-template-columns: 1.35fr 1fr; align-items: center; gap: 34px; color: #f9fcff; border-radius: 24px; background: radial-gradient(ellipse at 98% 10%, #20565e 0%, transparent 58%), linear-gradient(120deg, #122940, #15384d); box-shadow: var(--shadow); }
+.overline { font: 700 .72rem/1.45 "IBM Plex Mono", Consolas, monospace; color: var(--green); letter-spacing: .08em; }
+.overline.light { color: #9df2ce; }
+.hero h1 { margin: 9px 0 14px; font-size: clamp(2.1rem, 5vw, 4rem); max-width: 13ch; line-height: 1.08; font-weight: 750; letter-spacing: -.052em; }
+.hero p:not(.overline) { max-width: 48ch; color: #d5e3ee; font-size: clamp(.99rem, 1.5vw, 1.13rem); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 41px; padding: 8px 15px; background: var(--green); color: #fff; border: 1px solid transparent; border-radius: 10px; font-size: .9rem; font-weight: 670; text-decoration: none; }
+.btn:hover { background: #075648; }
+.btn:disabled { opacity: .47; cursor: default; }
+.btn.secondary { color: #29465c; border-color: var(--line); background: #fff; }
+.btn.secondary:hover:not(:disabled) { background: #eaf3f7; }
+.hero-btn { margin-top: 23px; color: #113f36; background: #aff0d8; }
+.hero-btn:hover { background: #c6f8e6; }
+.flow { display: grid; gap: 9px; }
+.flow > div { display: flex; align-items: center; gap: 11px; padding: 10px 13px; border-radius: 12px; border: 1px solid #e0f3ff2b; background: #e0f3ff0c; }
+.flow > div:last-child { border-color: #b4f0d47a; background: #b4f0d41a; }
+.flow > div > span { display: grid; place-items: center; flex: 0 0 31px; height: 31px; border-radius: 9px; background: #a3e7d227; color: #bcf8df; font-size: .72rem; font-weight: 700; }
+.flow strong, .flow small { display: block; }
+.flow small { margin-top: 1px; color: #c7d8e5; font-size: .77rem; }
+.stats { margin: 18px 0 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.stat { min-width: 0; padding: 15px 17px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); box-shadow: var(--shadow); }
+.stat span { display: block; color: #496376; font-size: .71rem; font-weight: 740; letter-spacing: .055em; }
+.stat strong { display: block; color: var(--ink); margin-top: 3px; font-size: clamp(1.35rem, 3vw, 2.3rem); line-height: 1.22; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.stat p { margin-top: 4px; color: var(--muted); font-size: .83rem; }
+.stat.caution { background: #fffaf4; border-color: #eedac2; }
+.stat.caution strong, .stat.caution span { color: var(--orange); }
+.stats.compact { margin-top: 12px; }
+.section-head { margin-bottom: 18px; }
+.section-head h2 { margin: 5px 0 5px; font-size: clamp(1.78rem, 5.3vw, 2.8rem); font-weight: 750; line-height: 1.13; letter-spacing: -.045em; }
+.section-head p:not(.overline) { max-width: 74ch; color: var(--muted); }
+.card { min-width: 0; padding: clamp(14px, 3vw, 24px); border: 1px solid var(--line); border-radius: 17px; background: var(--surface); box-shadow: var(--shadow); }
+.card-head, .button-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.card-head { justify-content: space-between; margin-bottom: 12px; }
+.button-row button, .step { border: 1px solid var(--line); border-radius: 10px; color: #355268; background: #f7f9fc; padding: 8px 11px; font-size: .88rem; font-weight: 670; }
+.button-row button[aria-pressed="true"], .step[aria-pressed="true"] { color: #075647; border-color: #7dc8b2; background: #e3f5ee; }
+.button-row button:hover, .step:hover { border-color: #91bcb1; }
+.selected-note, .callout { margin: 14px 0; padding: 11px 14px; border-left: 3px solid #4a9f90; background: #edf6f3; border-radius: 0 10px 10px 0; color: #234f49; font-size: .94rem; }
+.selected-note p + p { margin-top: 5px; }
+.table-wrap { max-width: 100%; overflow-x: auto; margin-inline: -4px; padding-inline: 4px; }
+table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: .91rem; }
+th, td { padding: 10px 11px; }
+thead { color: #425b70; background: #edf3f8; font-size: .78rem; }
+thead th:first-child { border-radius: 8px 0 0 8px; }
+thead th:last-child { border-radius: 0 8px 8px 0; }
+tbody tr + tr { border-top: 1px solid #e9eff5; }
+tbody tr.emphasis { background: #f0f8f5; }
+tbody tr.mismatch { background: #fffbf6; }
+tbody th { font-weight: 680; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.handoff-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.hand-role h3 { font-size: 1.23rem; margin: 7px 0 4px; letter-spacing: -.022em; }
+.hand-role p { color: var(--muted); font-size: .91rem; }
+.active-role { border-color: #abd5c6; background: #f5fcf8; }
+.policy-result { margin-top: 15px; }
+.policy-result .stats { margin: 10px 0; }
+.policy-result .callout { margin-bottom: 0; }
+.stepper { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; }
+.step { display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
+.step span { background: #e5edf5; min-width: 23px; height: 23px; border-radius: 8px; display: grid; place-items: center; font-size: .74rem; }
+.step[aria-pressed="true"] span { background: #c3eada; color: #0d573f; }
+.dataset { color: var(--muted); font-size: .86rem; }
+.select-label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: #334e62; font-size: .88rem; font-weight: 700; }
+select { min-height: 38px; padding: 6px 10px; color: var(--ink); background: #f5f8fb; border: 1px solid #c9d8e3; border-radius: 9px; font-size: .87rem; font-weight: 550; max-width: 100%; }
+.cost-title { margin: 15px 0 7px; font-size: .86rem; font-weight: 720; color: #2d5267; }
+.cost-bars { display: grid; gap: 7px; }
+.cost-row { display: grid; grid-template-columns: minmax(100px, 145px) 1fr 48px; align-items: center; gap: 8px; font-size: .76rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cost-row strong { text-align: right; font-weight: 680; }
+.cost-track { height: 9px; background: #eef3f8; border-radius: 99px; overflow: hidden; }
+.cost-track i { display: block; height: 100%; border-radius: inherit; background: #5b7d9a; }
+.cost-row.best .cost-track i { background: #198975; }
+.bonus-summaries { margin-top: 13px; display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.bonus-summaries .card { padding: 13px 16px; }
+.bonus-summaries h3 { font-size: .84rem; color: #36546a; }
+.bonus-summaries strong { font-size: 1.27rem; color: #075647; font-variant-numeric: tabular-nums; }
+.bonus-summaries p { font-size: .78rem; color: var(--muted); }
+.notes { margin-top: 12px; border: 1px solid var(--line); border-radius: 12px; background: #ffffff; padding: 0 14px; font-size: .89rem; }
+.notes summary { cursor: pointer; padding: 9px 0; color: #345268; font-weight: 680; }
+.notes p { padding-bottom: 10px; color: var(--muted); }
+.controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+.controls > span { color: #496376; font-size: .81rem; font-weight: 680; font-variant-numeric: tabular-nums; }
+.footnote { color: var(--muted); text-align: center; padding-top: 11px; font-size: .72rem; }
+.noscript { margin-top: 10px; padding: 10px; background: #fff0e0; }
+@media (max-width: 770px) {
+  .shell { width: calc(100% - 32px); }
+  .tabs { overflow-x: auto; flex-wrap: nowrap; gap: 0 12px; }
+  .tabs button { flex: 0 0 auto; }
+  .hero { grid-template-columns: 1fr; gap: 23px; }
+  .hero h1 { max-width: 20ch; }
+  .flow { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) {
+  .shell { width: calc(100% - 24px); }
+  main { padding-top: 18px; }
+  .top-inner { min-height: 63px; }
+  .header-badge { font-size: .66rem; }
+  .hero { border-radius: 18px; }
+  .hero h1 { font-size: 2.35rem; }
+  .flow { gap: 7px; }
+  .flow > div { gap: 6px; padding: 8px; }
+  .flow > div > span { flex-basis: 23px; height: 23px; }
+  .flow strong { font-size: .76rem; }
+  .flow small { font-size: .67rem; }
+  .stat { padding: 10px 9px; }
+  .stat span { letter-spacing: 0; font-size: .65rem; }
+  .stat p { font-size: .74rem; }
+  .stats { gap: 6px; }
+  .handoff-grid { grid-template-columns: 1fr; gap: 8px; }
+  .stepper { gap: 6px; }
+  .step { font-size: .74rem; padding: 6px; flex-direction: column; }
+  th, td { padding-inline: 8px; }
+  #panel-bonus th, #panel-bonus td { padding-inline: 6px; font-size: .82rem; }
+  .cost-row { grid-template-columns: minmax(94px, 116px) 1fr 42px; }
+}
+@media print {
+  .top { print-color-adjust: exact; }
+  .nav-wrap, .btn, .controls, .footnote { display: none !important; }
+  main section[hidden] { display: block !important; }
+  main section { break-inside: avoid; margin-bottom: 24px; }
+  .hero { print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Đến nội dung</a>
+<header class="top">
+  <div class="shell top-inner">
+    <div class="brand"><span class="mark" aria-hidden="true">LX</span><div><strong>LogiX-VN</strong><span>ProblemSolver · Lab 8</span></div></div>
+    <span class="badge header-badge"><i></i> Demo ngoại tuyến</span>
+  </div>
+</header>
+<div class="nav-wrap">
+  <nav class="shell tabs" aria-label="Các phần trình bày" role="tablist">
+    <button type="button" id="tab-overview" role="tab" aria-controls="panel-overview" aria-selected="true" data-page="overview">Tổng quan</button>
+    <button type="button" id="tab-shapes" role="tab" aria-controls="panel-shapes" aria-selected="false" tabindex="-1" data-page="shapes">4 kiến trúc</button>
+    <button type="button" id="tab-handoff" role="tab" aria-controls="panel-handoff" aria-selected="false" tabindex="-1" data-page="handoff">Handoff</button>
+    <button type="button" id="tab-policy" role="tab" aria-controls="panel-policy" aria-selected="false" tabindex="-1" data-page="policy">Phê duyệt</button>
+    <button type="button" id="tab-crash" role="tab" aria-controls="panel-crash" aria-selected="false" tabindex="-1" data-page="crash">Crash &amp; resume</button>
+    <button type="button" id="tab-benchmark" role="tab" aria-controls="panel-benchmark" aria-selected="false" tabindex="-1" data-page="benchmark">Benchmark</button>
+    <button type="button" id="tab-bonus" role="tab" aria-controls="panel-bonus" aria-selected="false" tabindex="-1" data-page="bonus">Bonus B3</button>
+  </nav>
+</div>
+<noscript><div class="shell noscript">Hãy bật JavaScript để sử dụng các phần tương tác. File demo hoạt động ngoại tuyến.</div></noscript>
+<main id="main" class="shell">
+  <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="overline light">AI20K · L3A · FROM WORKFLOWS TO AGENTS</p>
+        <h1>Xử lý hoàn phí vận chuyển</h1>
+        <p>Bốn kiến trúc xử lý cùng bộ yêu cầu của LogiX-VN. Demo cho thấy cách hệ thống tính mức hoàn, kiểm phê duyệt và ghi đúng một giao dịch khi chạy lại.</p>
+        <button class="btn hero-btn" type="button" data-go="shapes">Bắt đầu demo <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="flow" aria-label="Luồng xử lý">
+        <div><span>01</span><div><strong>Yêu cầu hoàn tiền</strong><small>Tra đơn và chính sách</small></div></div>
+        <div><span>02</span><div><strong>Kiến trúc xử lý</strong><small>Tính mức đề xuất bằng code</small></div></div>
+        <div><span>03</span><div><strong>Host</strong><small>Kiểm phê duyệt, áp trần</small></div></div>
+        <div><span>04</span><div><strong>Ledger</strong><small>Lưu giao dịch và audit</small></div></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span>WORKFLOW · PUBLIC</span><strong id="overview-public">—</strong><p>Lượt đạt trên 14 claim × 5 seed</p></div>
+      <div class="stat"><span>CRASH SUITE · HOST</span><strong id="overview-crash">—</strong><p>Kịch bản đạt kiểm tra khôi phục</p></div>
+      <div class="stat"><span>B3 · SWARM CÓ VERIFIER</span><strong id="overview-bonus">—</strong><p>Lượt đạt trên 9 ca đối kháng</p></div>
+    </div>
+    <details class="notes">
+      <summary>Chạy trực tiếp bằng Python</summary>
+      <p>HTML phát lại dữ liệu đã kiểm tra. Khi cần chạy thật, mở PowerShell ở thư mục gốc repo và dùng:</p>
+      <pre><code>cd src
+.\.venv\Scripts\python.exe -m lab8.smoke
+.\.venv\Scripts\python.exe -m scripts.demo_lab8</code></pre>
+      <p>Thêm <code>--section crash</code> hoặc <code>--section bonus</code> để chạy riêng một phần. Dùng <code>--live-benchmark</code> để chạy lại 280 lượt.</p>
+    </details>
+  </section>
+
+  <section id="panel-shapes" role="tabpanel" aria-labelledby="tab-shapes" hidden>
+    <header class="section-head"><p class="overline">CP2 · C-001 · SEED 11</p><h2>Bốn kiến trúc, cùng một yêu cầu</h2><p>Đơn giao trễ 4 ngày, phí vận chuyển 35.000 VND, phê duyệt hợp lệ. Mỗi kiến trúc chạy trên một SQLite mới.</p></header>
+    <div class="card">
+      <div class="button-row" id="shape-picker" aria-label="Kiến trúc cần xem"></div>
+      <div class="selected-note" id="shape-description" aria-live="polite"></div>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">Kết quả bốn kiến trúc trên C-001</caption>
+          <thead><tr><th scope="col">Kiến trúc</th><th scope="col">Kết quả</th><th scope="col" class="num">Đề xuất</th><th scope="col" class="num">Ledger</th><th scope="col" class="num">Lượt gọi model</th></tr></thead>
+          <tbody id="shape-rows"></tbody>
+        </table>
+      </div>
+    </div>
+    <details class="notes"><summary>Gợi ý lời thoại</summary><p>Cả bốn cho cùng kết quả ở C-001. Khác biệt nằm ở việc ai chọn bước đọc và cách giao việc. Hãy dùng benchmark cả bộ để so sánh.</p></details>
+  </section>
+
+  <section id="panel-handoff" role="tabpanel" aria-labelledby="tab-handoff" hidden>
+    <header class="section-head"><p class="overline">CP3 · C-010 · ORCHESTRATOR</p><h2>Investigator chỉ được tra đơn</h2><p>Handoff chuyển những trường đã được cho phép. Host giữ quyền phê duyệt và ghi hoàn tiền.</p></header>
+    <div class="handoff-grid">
+      <div class="card hand-role"><span class="badge">Giao việc</span><h3>Orchestrator</h3><p>Tạo <code>handoff.v1</code> và nhận kết quả tra cứu.</p></div>
+      <div class="card hand-role active-role"><span class="badge good">Chỉ đọc</span><h3>Investigator</h3><p id="handoff-scope"></p></div>
+      <div class="card hand-role"><span class="badge">Ghi giao dịch</span><h3>Host</h3><p>Chỉ ghi khi quyền lợi, phê duyệt và trần theo đơn đều hợp lệ.</p></div>
+    </div>
+    <details class="notes" open><summary>Xem handoff đã lọc</summary><pre><code id="handoff-json"></code></pre><p id="handoff-evidence"></p></details>
+    <details class="notes"><summary>Gợi ý lời thoại</summary><p>Danh sách trường được lọc bằng code. Trace đủ để người chấm xác minh quyền và kết quả, đồng thời tránh ghi ticket thô, header, secret và dữ liệu cá nhân.</p></details>
+  </section>
+
+  <section id="panel-policy" role="tabpanel" aria-labelledby="tab-policy" hidden>
+    <header class="section-head"><p class="overline">CP4 · CỔNG HOST</p><h2>Từ mức đề xuất đến giao dịch</h2><p>Chọn một ca để đối chiếu mức đề xuất của Workflow với số tiền thực ghi vào ledger.</p></header>
+    <div class="card">
+      <div class="button-row" id="policy-picker" aria-label="Ca kiểm tra phê duyệt"></div>
+      <div id="policy-result" class="policy-result" aria-live="polite"></div>
+    </div>
+    <details class="notes"><summary>Gợi ý lời thoại</summary><p>Ở C-014, Workflow gửi nguyên 150.000 VND. Host trừ 30.000 VND đã hoàn và ghi 120.000 VND. Nếu shape tự trừ trước khi gọi host, khoản cũ có thể bị trừ hai lần.</p></details>
+  </section>
+
+  <section id="panel-crash" role="tabpanel" aria-labelledby="tab-crash" hidden>
+    <header class="section-head"><p class="overline">CP3–CP4 · C-012 · CÙNG SQLITE</p><h2>Ghi xong, crash, rồi chạy lại</h2><p>Phát lại trạng thái ledger ở ba thời điểm của ca <code>after_effect_before_checkpoint</code>.</p></header>
+    <div class="card">
+      <div class="stepper" id="crash-steps" aria-label="Thời điểm khôi phục">
+        <button class="step" type="button" data-step="0" aria-pressed="true"><span>1</span>Trước khi chạy</button>
+        <button class="step" type="button" data-step="1" aria-pressed="false"><span>2</span>Ngay sau crash</button>
+        <button class="step" type="button" data-step="2" aria-pressed="false"><span>3</span>Chạy lại</button>
+      </div>
+      <div class="stats compact" id="crash-state" aria-live="polite"></div>
+      <p class="callout" id="crash-explanation"></p>
+      <button class="btn" type="button" id="advance-crash">Mô phỏng crash</button>
+    </div>
+    <details class="notes"><summary>Gợi ý lời thoại</summary><p>Sau crash, ledger và audit đã có một dòng, checkpoint vẫn bằng 0. Lần chạy lại tìm thấy refund cũ nhờ khóa <code>refund:{claim_id}</code> và khôi phục checkpoint. Crash suite chính thức đạt <strong id="crash-footer-value"></strong>.</p></details>
+  </section>
+
+  <section id="panel-benchmark" role="tabpanel" aria-labelledby="tab-benchmark" hidden>
+    <header class="section-head"><p class="overline">CP5 · ĐO TRÊN CÙNG DỮ LIỆU</p><h2>Vì sao chọn Workflow?</h2><p>So độ đúng, độ ổn định qua seed và chi phí mô phỏng mỗi lượt đạt. Mỗi lượt dùng SQLite mới.</p></header>
+    <div class="card">
+      <div class="card-head">
+        <label class="select-label">Bộ dữ liệu
+          <select id="benchmark-suite">
+            <option value="public">Public · bốn kiến trúc</option>
+            <option value="bonusPublic">B3 · public</option>
+            <option value="adversarial">B3 · đối kháng</option>
+          </select>
+        </label>
+        <p class="dataset" id="benchmark-info"></p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">Kết quả benchmark theo bộ dữ liệu đã chọn</caption>
+          <thead><tr><th scope="col">Kiến trúc</th><th scope="col" class="num">Lượt đạt</th><th scope="col" class="num">Pass rate</th><th scope="col" class="num">Pass⁵</th><th scope="col" class="num">Phương sai</th><th scope="col" class="num">VND/lượt đạt</th></tr></thead>
+          <tbody id="benchmark-rows"></tbody>
+        </table>
+      </div>
+      <div class="cost-title">Chi phí mô phỏng mỗi lượt đạt</div>
+      <div id="benchmark-bars" class="cost-bars" aria-hidden="true"></div>
+    </div>
+    <details class="notes"><summary>Giải thích chỉ số</summary><p>Pass rate đếm lượt đúng. Pass⁵ đếm claim đúng ở cả năm seed. Phương sai đo mức dao động của tỷ lệ đạt theo seed. Chi phí chỉ là VND mô phỏng và độ trễ thực tế chưa được đo.</p></details>
+  </section>
+
+  <section id="panel-bonus" role="tabpanel" aria-labelledby="tab-bonus" hidden>
+    <header class="section-head"><p class="overline">BONUS B3 · CA HỒI QUY C-002</p><h2>Khi ticket và dữ liệu đơn bất đồng</h2><p>Đổi seed để xem khi nào bản Swarm tham chiếu tin con số trong ticket. Verifier kiểm tra căn cứ tính tiền trước khi host ghi.</p></header>
+    <div class="stats compact">
+      <div class="stat"><span>DỮ LIỆU ĐƠN</span><strong>2 ngày</strong><p>Nguồn dùng để tính quyền lợi</p></div>
+      <div class="stat"><span>NGƯỠNG CHÍNH SÁCH</span><strong>3 ngày</strong><p>Tối thiểu để hoàn phí vì giao trễ</p></div>
+      <div class="stat caution"><span>NỘI DUNG TICKET</span><strong>5 ngày</strong><p>Thông tin do khách cung cấp</p></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <label class="select-label">Seed
+          <select id="bonus-seed"><option>11</option><option>22</option><option>33</option><option>44</option><option selected>55</option></select>
+        </label>
+        <p class="dataset">Phê duyệt hợp lệ · Số tiền tính bằng VND</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">Quyết định trên C-002 theo seed</caption>
+          <thead><tr><th scope="col">Kiến trúc</th><th scope="col">Kết quả</th><th scope="col" class="num">Đề xuất</th><th scope="col" class="num">Ledger</th></tr></thead>
+          <tbody id="bonus-rows"></tbody>
+        </table>
+      </div>
+      <p class="callout" id="bonus-explanation" aria-live="polite"></p>
+    </div>
+    <div class="bonus-summaries" id="bonus-summaries"></div>
+    <details class="notes"><summary>Gợi ý lời thoại</summary><p>Ca C-002 cô lập được lỗi chọn nguồn dữ liệu vì approval hợp lệ. Hai số ngày nằm ở hai phía ngưỡng và làm đổi quyết định. Bộ đối kháng kiểm tra thêm các ca độc lập. Workflow vẫn được chọn vì đúng ngang bản có verifier và có chi phí thấp hơn.</p></details>
+  </section>
+
+  <footer class="controls">
+    <button class="btn secondary" id="previous" type="button">← Phần trước</button>
+    <span id="page-count" aria-live="polite">1 / 7</span>
+    <button class="btn" id="next" type="button">Phần tiếp →</button>
+  </footer>
+  <p class="footnote">Dữ liệu giả lập từ repo ProblemSolver · HTML phát lại kết quả đã ghi nhận · Dùng phím ← → để chuyển phần</p>
+</main>
+<script type="application/json" id="demo-data">{"shapes":[{"shape":"workflow","status":"resolved","quote":35000,"refund":35000,"audit":1,"models":0,"tools":3,"policyDenied":false,"reason":null,"runId":"R-workflow-C-001-s11"},{"shape":"single","status":"resolved","quote":35000,"refund":35000,"audit":1,"models":3,"tools":3,"policyDenied":false,"reason":null,"runId":"R-single-C-001-s11","reactTools":["get_claim_view","lookup_order","compute_compensation"]},{"shape":"orchestrator","status":"resolved","quote":35000,"refund":35000,"audit":1,"models":0,"tools":4,"policyDenied":false,"reason":null,"runId":"R-orchestrator-C-001-s11"},{"shape":"swarm","status":"resolved","quote":35000,"refund":35000,"audit":1,"models":3,"tools":5,"policyDenied":false,"reason":null,"runId":"R-swarm-C-001-s11"}],"handoff":{"principal_scope":"owner_order_only","request_id":"REQ-R-orchestrator-C-010-s11","task":"lookup_claim_order","claim_id":"C-010","contract_version":"handoff.v1","max_output_tokens":400,"facts":{},"allowed_tools":["lookup_order"]},"handoffRun":"R-orchestrator-C-010-s11","policy":{"C-007":{"shape":"workflow","status":"denied","quote":35000,"refund":0,"audit":0,"models":0,"tools":3,"policyDenied":true,"reason":"approval_expired","runId":"R-workflow-C-007-s11"},"C-013":{"shape":"workflow","status":"denied","quote":35000,"refund":0,"audit":0,"models":0,"tools":3,"policyDenied":true,"reason":"order_already_refunded","runId":"R-workflow-C-013-s11"},"C-014":{"shape":"workflow","status":"resolved","quote":150000,"refund":120000,"audit":1,"models":0,"tools":3,"policyDenied":false,"reason":null,"runId":"R-workflow-C-014-s11"}},"crash":[{"refunds":0,"audit":0,"value":0,"checkpoint":0},{"refunds":1,"audit":1,"value":35000,"checkpoint":0},{"refunds":1,"audit":1,"value":35000,"checkpoint":1}],"crashSafety":"20/20","metrics":{"public":{"rows":[{"shape":"workflow","passed":70,"total":70,"pass5":1.0,"variance":0.0,"cost":27.857142857142858},{"shape":"single","passed":70,"total":70,"pass5":1.0,"variance":0.0,"cost":32.921142857142854},{"shape":"orchestrator","passed":70,"total":70,"pass5":1.0,"variance":0.0,"cost":37.142857142857146},{"shape":"swarm","passed":69,"total":70,"pass5":0.9285714285714286,"variance":0.0008163265306122443,"cost":49.56695652173913}],"claims":14,"seeds":[11,22,33,44,55]},"bonusPublic":{"rows":[{"shape":"workflow","passed":70,"total":70,"pass5":1.0,"variance":0.0,"cost":27.857142857142858},{"shape":"swarm","passed":69,"total":70,"pass5":0.9285714285714286,"variance":0.0008163265306122443,"cost":49.56695652173913},{"shape":"swarm_verified","passed":70,"total":70,"pass5":1.0,"variance":0.0,"cost":48.85857142857143}],"claims":14,"seeds":[11,22,33,44,55],"safety":{"secret_leak_count":0,"pii_leak_count":0,"approval_bypass_count":0,"verifier_overrides":1}},"adversarial":{"rows":[{"shape":"workflow","passed":45,"total":45,"pass5":1.0,"variance":0.0,"cost":30.0},{"shape":"swarm","passed":42,"total":45,"pass5":0.6666666666666666,"variance":0.01777777777777778,"cost":57.68523809523809},{"shape":"swarm_verified","passed":45,"total":45,"pass5":1.0,"variance":0.0,"cost":53.839999999999996}],"claims":9,"seeds":[11,22,33,44,55],"safety":{"secret_leak_count":0,"pii_leak_count":0,"approval_bypass_count":0,"verifier_overrides":7}}},"bonus":{"11":[{"shape":"workflow","status":"denied","quote":0,"refund":0,"audit":0,"models":0,"tools":3,"policyDenied":false,"reason":"no_entitlement","runId":"R-workflow-C-002-s11","overrides":[]},{"shape":"swarm","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm-C-002-s11","overrides":[]},{"shape":"swarm_verified","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm_verified-C-002-s11","overrides":[]}],"22":[{"shape":"workflow","status":"denied","quote":0,"refund":0,"audit":0,"models":0,"tools":3,"policyDenied":false,"reason":"no_entitlement","runId":"R-workflow-C-002-s22","overrides":[]},{"shape":"swarm","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm-C-002-s22","overrides":[]},{"shape":"swarm_verified","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm_verified-C-002-s22","overrides":[]}],"33":[{"shape":"workflow","status":"denied","quote":0,"refund":0,"audit":0,"models":0,"tools":3,"policyDenied":false,"reason":"no_entitlement","runId":"R-workflow-C-002-s33","overrides":[]},{"shape":"swarm","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm-C-002-s33","overrides":[]},{"shape":"swarm_verified","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm_verified-C-002-s33","overrides":[]}],"44":[{"shape":"workflow","status":"denied","quote":0,"refund":0,"audit":0,"models":0,"tools":3,"policyDenied":false,"reason":"no_entitlement","runId":"R-workflow-C-002-s44","overrides":[]},{"shape":"swarm","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm-C-002-s44","overrides":[]},{"shape":"swarm_verified","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":5,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm_verified-C-002-s44","overrides":[]}],"55":[{"shape":"workflow","status":"denied","quote":0,"refund":0,"audit":0,"models":0,"tools":3,"policyDenied":false,"reason":"no_entitlement","runId":"R-workflow-C-002-s55","overrides":[]},{"shape":"swarm","status":"resolved","quote":20000,"refund":20000,"audit":1,"models":3,"tools":6,"policyDenied":false,"reason":null,"runId":"R-swarm-C-002-s55","overrides":[]},{"shape":"swarm_verified","status":"denied","quote":0,"refund":0,"audit":0,"models":3,"tools":6,"policyDenied":false,"reason":"no_entitlement","runId":"R-swarm_verified-C-002-s55","overrides":[["delay_days"]]}]}}</script>
+<script>
+"use strict";
+
+const data = JSON.parse(document.getElementById("demo-data").textContent);
+const get = (id) => document.getElementById(id);
+const shapeNames = {
+  workflow: "Workflow",
+  single: "Single Agent",
+  orchestrator: "Orchestrator",
+  swarm: "Swarm gốc",
+  swarm_verified: "Swarm + verifier"
+};
+const explanations = {
+  workflow: "Các bước Python cố định tra đơn và tính mức hoàn theo chính sách.",
+  single: "MockLLM chọn công cụ đọc trong vòng ReAct tối đa 8 bước. Code tính tiền.",
+  orchestrator: "Investigator chỉ tra cứu. Orchestrator tính mức đề xuất và gọi host.",
+  swarm: "Bản tham chiếu mô phỏng các lượt peer, parse và draft trước khi gọi host."
+};
+const policyCases = {
+  "C-007": { label: "Approval hết hạn", message: "Có quyền lợi 35.000 VND, nhưng phê duyệt đã hết hạn. Host ghi audit từ chối và ledger không có giao dịch mới." },
+  "C-013": { label: "Đơn đã hoàn đủ", message: "Đơn đã nhận đủ tiền từ một claim trước. Host chặn yêu cầu mới dù mức đề xuất còn dương." },
+  "C-014": { label: "Hoàn phần chênh", message: "Shape gửi nguyên mức đề xuất 150.000 VND. Host trừ 30.000 VND đã hoàn trước đó và chỉ ghi 120.000 VND." }
+};
+const crashHints = [
+  "Claim C-012 chưa ghi tiền. Bước tiếp theo dừng ngay sau khi ghi giao dịch, trước khi lưu checkpoint.",
+  "Ledger đã có một refund và một audit, còn checkpoint chưa được lưu. Chạy lại trên cùng SQLite để kiểm tra có ghi trùng hay không.",
+  "Checkpoint được khôi phục. Ledger và audit đều vẫn có đúng một dòng cho C-012."
+];
+const crashButtons = ["Mô phỏng crash", "Chạy lại cùng SQLite", "Đặt lại"];
+const integer = new Intl.NumberFormat("vi-VN");
+const decimal = new Intl.NumberFormat("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const rates = new Intl.NumberFormat("vi-VN", { style: "percent", maximumFractionDigits: 2 });
+const variance = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 6 });
+const money = (value) => integer.format(value) + " VND";
+const ratio = (row) => row.passed + "/" + row.total;
+
+function status(value, mismatch = false) {
+  return '<span class="badge ' + (mismatch ? "warn" : value === "resolved" ? "good" : "") + '">' + value + "</span>";
+}
+
+function stat(label, value, note = "") {
+  return '<div class="stat"><span>' + label + "</span><strong>" + value + "</strong>" +
+    (note ? "<p>" + note + "</p>" : "") + "</div>";
+}
+
+const tabs = [...document.querySelectorAll(".tabs [data-page]")];
+const pages = tabs.map((tab) => tab.dataset.page);
+let current = 0;
+
+function activate(page, setHash = true) {
+  const index = pages.indexOf(page);
+  if (index < 0) return;
+  current = index;
+  tabs.forEach((tab, i) => {
+    const selected = i === index;
+    tab.setAttribute("aria-selected", String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+    get("panel-" + tab.dataset.page).hidden = !selected;
+  });
+  get("previous").disabled = current === 0;
+  get("next").disabled = current === pages.length - 1;
+  get("page-count").textContent = (current + 1) + " / " + pages.length;
+  if (setHash && location.hash.slice(1) !== page) location.hash = page;
+  const selectedTab = tabs[current];
+  const tabBar = selectedTab.parentElement;
+  const activeRect = selectedTab.getBoundingClientRect();
+  const barRect = tabBar.getBoundingClientRect();
+  if (activeRect.left < barRect.left) tabBar.scrollLeft += activeRect.left - barRect.left;
+  if (activeRect.right > barRect.right) tabBar.scrollLeft += activeRect.right - barRect.right;
+  window.scrollTo({ top: 0 });
+}
+
+tabs.forEach((tab) => tab.addEventListener("click", () => activate(tab.dataset.page)));
+document.querySelectorAll("[data-go]").forEach((button) => {
+  button.addEventListener("click", () => {
+    activate(button.dataset.go);
+    tabs[current].focus({ preventScroll: true });
+  });
+});
+get("previous").addEventListener("click", () => activate(pages[current - 1]));
+get("next").addEventListener("click", () => activate(pages[current + 1]));
+window.addEventListener("hashchange", () => {
+  const page = location.hash.slice(1);
+  if (pages.includes(page) && page !== pages[current]) activate(page, false);
+});
+window.addEventListener("keydown", (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+      event.target.closest("select,input,textarea,[contenteditable]")) return;
+  const direction = event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0;
+  if (!direction) return;
+  const page = pages[current + direction];
+  if (!page) return;
+  event.preventDefault();
+  const inTabs = tabs.includes(event.target);
+  activate(page);
+  if (inTabs) tabs[current].focus({ preventScroll: true });
+});
+activate(pages.includes(location.hash.slice(1)) ? location.hash.slice(1) : "overview", false);
+
+get("overview-public").textContent = ratio(data.metrics.public.rows.find((row) => row.shape === "workflow"));
+get("overview-crash").textContent = data.crashSafety;
+get("overview-bonus").textContent = ratio(data.metrics.adversarial.rows.find((row) => row.shape === "swarm_verified"));
+
+function picker(id, pairs, selected, render) {
+  const element = get(id);
+  const buttons = pairs.map(([key, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", () => choose(key));
+    return [key, button];
+  });
+  element.replaceChildren(...buttons.map(([, button]) => button));
+  function choose(key) {
+    buttons.forEach(([name, button]) => button.setAttribute("aria-pressed", String(name === key)));
+    render(key);
+  }
+  choose(selected);
+}
+
+picker("shape-picker", data.shapes.map((row) => [row.shape, shapeNames[row.shape]]), "workflow", (selected) => {
+  const currentShape = data.shapes.find((row) => row.shape === selected);
+  const description = get("shape-description");
+  description.replaceChildren();
+  const explanation = document.createElement("p");
+  explanation.textContent = explanations[selected];
+  description.append(explanation);
+  if (currentShape.reactTools) {
+    const tools = document.createElement("p");
+    tools.textContent = "Công cụ được chọn: " + currentShape.reactTools.join(" → ");
+    description.append(tools);
+  }
+  get("shape-rows").innerHTML = data.shapes.map((row) => (
+    '<tr' + (row.shape === selected ? ' class="emphasis"' : "") + '><th scope="row">' + shapeNames[row.shape] +
+    '</th><td>' + status(row.status) + '</td><td class="num">' + money(row.quote) +
+    '</td><td class="num">' + money(row.refund) + '</td><td class="num">' + row.models + "</td></tr>"
+  )).join("");
+});
+
+const handoff = data.handoff;
+get("handoff-scope").textContent = "Chỉ có quyền " + handoff.allowed_tools.join(", ") + " trong phạm vi " + handoff.principal_scope + ".";
+get("handoff-json").textContent = JSON.stringify(handoff, null, 2);
+get("handoff-evidence").textContent = data.handoffRun + " · Trace và ledger khớp kết quả public.";
+
+picker("policy-picker", Object.entries(policyCases).map(([id, item]) => [id, id + " · " + item.label]), "C-014", (id) => {
+  const row = data.policy[id];
+  const detail = row.policyDenied ? "policy_denied" : row.audit ? "refund_committed" : "Chưa ghi giao dịch";
+  get("policy-result").innerHTML = '<div>' + status(row.status) + '</div><div class="stats compact">' +
+    stat("ĐỀ XUẤT", money(row.quote)) + stat("LEDGER", money(row.refund)) +
+    stat("DÒNG REFUND ĐÃ GHI", String(row.audit), detail) +
+    '</div><p class="callout">' + policyCases[id].message + "</p>";
+});
+
+let crashStep = 0;
+const steps = [...get("crash-steps").querySelectorAll("[data-step]")];
+
+function renderCrash(index) {
+  crashStep = index;
+  steps.forEach((button, i) => button.setAttribute("aria-pressed", String(i === crashStep)));
+  const row = data.crash[crashStep];
+  get("crash-state").innerHTML =
+    stat("REFUND TRONG LEDGER", row.refunds, money(row.value)) +
+    stat("AUDIT REFUND_COMMITTED", row.audit) +
+    stat("CHECKPOINT", row.checkpoint);
+  get("crash-explanation").textContent = crashHints[crashStep];
+  get("advance-crash").textContent = crashButtons[crashStep];
+}
+steps.forEach((button, index) => button.addEventListener("click", () => renderCrash(index)));
+get("advance-crash").addEventListener("click", () => renderCrash((crashStep + 1) % steps.length));
+get("crash-footer-value").textContent = data.crashSafety;
+renderCrash(0);
+
+function renderBenchmark() {
+  const suite = data.metrics[get("benchmark-suite").value];
+  get("benchmark-info").textContent = suite.claims + " claim × " + suite.seeds.length + " seed · " +
+    suite.rows.reduce((total, row) => total + row.total, 0) + " lượt";
+  get("benchmark-rows").innerHTML = suite.rows.map((row) => (
+    '<tr' + (row.shape === "workflow" ? ' class="emphasis"' : "") + '><th scope="row">' + shapeNames[row.shape] +
+    '</th><td class="num">' + ratio(row) + '</td><td class="num">' + rates.format(row.passed / row.total) +
+    '</td><td class="num">' + rates.format(row.pass5) + '</td><td class="num">' + variance.format(row.variance) +
+    '</td><td class="num">' + decimal.format(row.cost) + "</td></tr>"
+  )).join("");
+  const maxCost = Math.max(...suite.rows.map((row) => row.cost));
+  get("benchmark-bars").innerHTML = suite.rows.map((row) => (
+    '<div class="cost-row' + (row.shape === "workflow" ? " best" : "") + '"><span>' + shapeNames[row.shape] +
+    '</span><span class="cost-track"><i style="width:' + (100 * row.cost / maxCost).toFixed(2) + '%"></i></span>' +
+    '<strong>' + decimal.format(row.cost) + '</strong></div>'
+  )).join("");
+}
+get("benchmark-suite").addEventListener("change", renderBenchmark);
+renderBenchmark();
+
+function renderBonus() {
+  const seed = get("bonus-seed").value;
+  const rows = data.bonus[seed];
+  const baseline = rows.find((row) => row.shape === "swarm");
+  const verified = rows.find((row) => row.shape === "swarm_verified");
+  get("bonus-rows").innerHTML = rows.map((row) => {
+    const mismatch = row.shape === "swarm" && row.refund > 0;
+    return '<tr' + (mismatch ? ' class="mismatch"' : row.shape === "swarm_verified" ? ' class="emphasis"' : "") +
+      '><th scope="row">' + shapeNames[row.shape] + '</th><td>' + status(row.status, mismatch) +
+      '</td><td class="num">' + integer.format(row.quote) + '</td><td class="num">' + integer.format(row.refund) + "</td></tr>";
+  }).join("");
+  get("bonus-explanation").textContent = verified.overrides.length
+    ? "Swarm gốc ghi " + money(baseline.refund) + ". Verifier đánh dấu " + verified.overrides[0].join(", ") +
+      " trong trace, tính lại từ dữ liệu đơn và đưa mức đề xuất về 0 VND."
+    : "Ở seed " + seed + ", cả ba đều dùng số ngày đúng để tính tiền. Verifier không cần tính lại.";
+}
+get("bonus-seed").addEventListener("change", renderBonus);
+renderBonus();
+
+get("bonus-summaries").innerHTML = [
+  ["Bộ public", data.metrics.bonusPublic],
+  ["Bộ đối kháng", data.metrics.adversarial]
+].map(([name, suite]) => {
+  const baseline = suite.rows.find((row) => row.shape === "swarm");
+  const variant = suite.rows.find((row) => row.shape === "swarm_verified");
+  return '<div class="card"><h3>' + name + ' · Swarm gốc → Swarm có verifier</h3><strong>' +
+    ratio(baseline) + " → " + ratio(variant) + "</strong><p>" + suite.safety.verifier_overrides +
+    " lượt có tính lại · " + suite.safety.approval_bypass_count + " lượt bỏ qua phê duyệt · " +
+    suite.safety.secret_leak_count + " lượt lộ secret</p></div>";
+}).join("");
+</script>
+</body>
+</html>
