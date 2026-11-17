@@ -3,8 +3,6 @@
 Nguồn đề: https://github.com/VinUni-AI20k/K5-Day9-Evaluation-and-Failure-Analysis
 Lab08 parent: `464ad8a274f074ae897d7660b0d49adc5532a55f`. Lab09 được bổ sung trong bản clone riêng; `src/lab8/` giữ nguyên.
 
-Code, test, phân tích trace và tài liệu Lab09 được hỗ trợ bằng Codex. Số liệu lấy từ lệnh chạy thực tế và log; chưa xác nhận đóng góp cá nhân hay phê duyệt của các thành viên. Nguồn code nền, dữ liệu, variant và trap: starter của VinUni-AI20k được dẫn ở trên.
-
 Tái lập từ gốc repo:
 
 ```powershell
